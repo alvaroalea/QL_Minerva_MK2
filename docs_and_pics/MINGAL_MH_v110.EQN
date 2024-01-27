@@ -1,0 +1,82 @@
+; JED2EQN -- JEDEC file to Boolean Equations disassembler (Version V063)
+; Copyright (c) National Semiconductor Corporation 1990-1993
+; Disassembled from mingal.jed. Date: 10-24-117
+;$GALMODE MEDIUM
+
+; Based on TF's JED map file (MGCV1.00), decompiled using JED2EQN and tidied-up a bit
+;
+; 1.10: Updated to allow ROM 16k slot to be mapped-in/out, thus to enable TK2 in the onboard EPROM
+;       - Additional INput pin (i6) re-used as UprROMEn to enable or disable (1/0) the upper 16k
+;         of the onboard EPROM - i6 was originally tied to Vcc.
+; Notes:
+;   In the default configuration, INputs on i6 and i7 are tied to Vcc, but clearly aimed at providing
+;   some flexibility.
+;   Some clever state-stuff going on with feedback on the SCL/SDA pins - haven't gotten my head around it yet.
+;   OUTputs on o14 and o15 are not currently used - but could be :-)
+;   Addresses with A4..A5: 1..0 plus DECODE from the 13 i/p NAND map to the I2C 'port'
+;   A0 and A1 are then used to drive SCL and SDA respectively.
+
+chip mingal_mh_v110 GAL16V8
+
+;Inputs
+A15=1 A14=2 ROMOEH=3 A5=4 A4=5 UprROMEn=6 i7=7 A1=8 A0=9 /DECODE=11
+
+;Outputs
+D0=12 f13=13 I2CEn=14 o15=15 f16=16 SDA=17 SCL=18 /ROMOEL=19 
+
+;Power
+GND=10 VCC=20 
+
+; MGCv1.10
+@ues 4d474376312e3130
+
+equations
+
+;/ROMOEL = /A14 * A15 * ROMOEH * i7 * /DECODE
+;    + /A14 * A15 * ROMOEH * A5 * i7
+;    + /A14 * A15 * ROMOEH * /A4 * i7
+;    + /A15 * ROMOEH * i7
+;    + /ROMOEH * /i7
+;    + /A5 * A4 * /i7 * DECODE
+
+ROMOEL = ROMOEH * /I2CEn *  UprROMEn
+       + ROMOEH * /I2CEn * /UprROMEn * /A14 * /A15
+       + ROMOEH * /I2CEn * /UprROMEn * /A14 *  A15
+       + ROMOEH * /I2CEn * /UprROMEn *  A14 * /A15
+       + /ROMOEH * /i7
+       + /A5 * A4 * /i7 * DECODE
+
+ROMOEL.oe = vcc
+
+/SCL = I2CEn * /A0
+     + /ROMOEH * /SCL
+     + /SCL * /DECODE
+     + A14 * /SCL
+     + /SCL * A5
+     + /SCL * /A4
+     + I2CEn * /f13
+SCL.oe = vcc
+
+/SDA = vcc
+SDA.oe = /f16
+
+/f16 = I2CEn * /A1
+    + /ROMOEH * /f16
+    + /f16 * /DECODE
+    + A14 * /f16
+    + A5 * /f16
+    + /A4 * /f16
+f16.oe = vcc
+
+I2CEn = ROMOEH * DECODE * A4 * /A5 * /A14
+I2CEn.oe = Vcc
+
+/o15 = gnd
+o15.oe = gnd
+
+/f13 = /ROMOEH * /A0
+     +  ROMOEH * /f13
+f13.oe = vcc
+
+/D0 = /SDA
+D0.oe = I2CEn
