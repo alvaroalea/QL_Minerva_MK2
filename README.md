@@ -23,4 +23,10 @@ Main information, GAL code, pictures, etc... has been obtained from this post: h
 
 ![My image](QL_Minerva_MK2.png)
 
+ROM Chip shall be installed as per this picture:
+
+![My image](QL_Minerva_MK2_mount.png)
+
+
+
 
