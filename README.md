@@ -10,7 +10,11 @@ https://ohwr.org/cern_ohl_s_v2.txt
 
 My work is only copy the design to Kicad, all (C) are retaing to the original owners.
 
-U1 shall be mounted in the solder side, in a way that allow to insert on the Sinclair QL's Rom socket.
+U1 shall be pin row, to be mounted in the solder side, in a way that allow to insert on the Sinclair QL's Rom socket.
+
+U5 shall be solder without socket under U2.
+
+U2 shall be solder with a socket to allow space for U5.
 
 Original Information of minerva can be found here: http://tfs.firshman.co.uk/ql/minerva.htm
 
