@@ -1,0 +1,52 @@
+GAL16V8
+MinMH110   ; Minerva MK2 Martyn Hill Version 1.10 with selectable top 16Kb
+
+A15 A14 ROMOEH A5 A4 UprROMEn i7 A1 A0 GND /DECODE
+D0 f13 I2CEn o15 f16 SDA SCL /ROMOEL VCC
+
+ROMOEL = ROMOEH * /I2CEn *  UprROMEn
+       + ROMOEH * /I2CEn * /UprROMEn * /A14 * /A15
+       + ROMOEH * /I2CEn * /UprROMEn * /A14 *  A15
+       + ROMOEH * /I2CEn * /UprROMEn *  A14 * /A15
+       + /ROMOEH * /i7
+       + /A5 * A4 * /i7 * DECODE
+
+I2CEn = ROMOEH * DECODE * A4 * /A5 * /A14
+
+/SCL = I2CEn * /A0
+     + I2CEn * /f13
+     + /SCL * /ROMOEH
+     + /SCL * /DECODE
+     + /SCL * A14
+     + /SCL * A5
+     + /SCL * /A4
+
+/SDA.T = VCC
+SDA.E = /f16
+
+/f16 = I2CEn * /A1
+    + /f16 * /ROMOEH
+    + /f16 * /DECODE
+    + /f16 * A14
+    + /f16 * A5
+    + /f16 * /A4
+
+/f13 = /ROMOEH * /A0
+     +  ROMOEH * /f13
+
+/D0.T = /SDA
+D0.E = I2CEn
+
+DESCRIPTION:
+ Based on TF's JED map file (MGCV1.00), decompiled using JED2EQN and tidied-up a bit
+
+ 1.10: Updated to allow ROM 16k slot to be mapped-in/out, thus to enable TK2 in the onboard EPROM
+       - Additional INput pin (i6) re-used as UprROMEn to enable or disable (1/0) the upper 16k
+         of the onboard EPROM - i6 was originally tied to Vcc.
+ Notes:
+   In the default configuration, INputs on i6 and i7 are tied to Vcc, but clearly aimed at providing
+   some flexibility.
+   Some clever state-stuff going on with feedback on the SCL/SDA pins - haven't gotten my head around it yet.
+   OUTputs on o14 and o15 are not currently used - but could be :-)
+   Addresses with A4..A5: 1..0 plus DECODE from the 13 i/p NAND map to the I2C 'port'
+   A0 and A1 are then used to drive SCL and SDA respectively.
